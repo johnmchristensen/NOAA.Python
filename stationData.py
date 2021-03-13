@@ -6,6 +6,33 @@ class Indexes:
 
 DATA_SIZE = 8
 VALUE_LENGTH = 5
+NO_DATA = -9999
+
+class MonthData:
+    def __init__(self, year, month, data, line):
+        self.year = year
+        self.month = month
+        self.data = data
+        self.line = line
+
+class Station:
+    def __init__(self, stationId):
+        self.id = stationId
+        self._data = {}
+
+    def addData(self, element, monthData):
+        if (element in self._data):
+            self._data[element].append(monthData)
+        else:
+            self._data[element] = [monthData]
+
+    def parseData(self, line):
+        year = line[Indexes.YEAR: Indexes.MONTH]
+        month = line[Indexes.MONTH: Indexes.ELEMENT_NAME]
+        element = line[Indexes.ELEMENT_NAME: Indexes.START_DATA]
+        data = [int(line[i: i + DATA_SIZE][0: VALUE_LENGTH]) for i in range(Indexes.START_DATA, len(line), DATA_SIZE)]
+
+        self.addData(element, MonthData(year, month, data, line))
 
 class StationData:
     def __init__(self, year, month, dataType, dataValues, line):
@@ -15,8 +42,8 @@ class StationData:
         self.dataValues = dataValues
         self.line = line
 
-def parseStationData(line):
-    return StationData(line[Indexes.YEAR: Indexes.MONTH - 1], \
-        line[Indexes.MONTH: Indexes.ELEMENT_NAME - 1], line[Indexes.ELEMENT_NAME: Indexes.START_DATA - 1], \
-        [int(line[i: i + DATA_SIZE][0: VALUE_LENGTH]) for i in range(Indexes.START_DATA, len(line), DATA_SIZE)], \
-        line)
+def convertFromTenthsOfCelciusToFarenheit(temp):
+    if (temp == NO_DATA):
+        return NO_DATA
+
+    return (temp / 10) * (9/5) + 32
