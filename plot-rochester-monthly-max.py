@@ -1,7 +1,6 @@
-from ftplib import FTP
-from stationData import Station
 from stationData import convertFromTenthsOfCelciusToFarenheit
 from stationData import NO_DATA
+from ghcnFTP import getStation
 from math import sqrt
 from matplotlib import pyplot as plt
 
@@ -12,16 +11,6 @@ def getAverage(d):
 def plotYear(axes, stationData, year):
     maxAverage = [(i.month, getAverage(i)) for i in stationData._data["TMAX"] if i.year == year]
     axes.plot([i[0] for i in maxAverage], [i[1] for i in maxAverage], label=year)
-
-def getStation():
-    ftp = FTP("ftp.ncdc.noaa.gov")
-    ftp.login()
-    ftp.cwd("pub/data/ghcn/daily/all")
-
-    station = Station("USW00014768")
-    ftp.retrlines("RETR USW00014768.dly", lambda l: station.parseData(l))
-    
-    return station
 
 def plotMonthlyMaxTemperatureAverageForEachYear(stationData):
     years = list(set([i.year for i in stationData._data["TMAX"]]))
@@ -37,4 +26,4 @@ def plotMonthlyMaxTemperatureAverageForEachYear(stationData):
     axes.set_title("Rochester: Average Max Temperature Per Month Per Year")
     plt.show()
 
-plotMonthlyMaxTemperatureAverageForEachYear(getStation())
+plotMonthlyMaxTemperatureAverageForEachYear(getStation("USW00014768"))
