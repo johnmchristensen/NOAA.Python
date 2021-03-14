@@ -27,8 +27,8 @@ class Station:
             self._data[element] = [monthData]
 
     def parseData(self, line):
-        year = line[Indexes.YEAR: Indexes.MONTH]
-        month = line[Indexes.MONTH: Indexes.ELEMENT_NAME]
+        year = int(line[Indexes.YEAR: Indexes.MONTH])
+        month = int(line[Indexes.MONTH: Indexes.ELEMENT_NAME])
         element = line[Indexes.ELEMENT_NAME: Indexes.START_DATA]
         data = [int(line[i: i + DATA_SIZE][0: VALUE_LENGTH]) for i in range(Indexes.START_DATA, len(line), DATA_SIZE)]
 
